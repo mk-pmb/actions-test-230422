@@ -1,0 +1,43 @@
+%YAML 1.1
+# ^-- ATTN: [2019-12-31] If you use a later version, Github will fail
+#     with a bogus error message "You have an error in your yaml syntax".
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+on:
+    push:
+        branches:
+          - 'build-**'
+          - 'debug-**'
+
+env:
+    IMPL_BRANCH: 'experimental'
+
+jobs:
+    prep:
+        name: 'Prepare build matrix'
+        runs-on: ubuntu-latest
+        steps:
+          - name: 'Checkout job implementation'
+            uses: actions/checkout@v3
+            with:
+                ref: '${{ env.IMPL_BRANCH }}'
+          - run: './prep.sh'
+            id: prep
+        outputs:
+            c: '${{ steps.prep.outputs.c }}'
+            j: '${{ steps.prep.outputs.n }}'
+            m: '${{ steps.prep.outputs.m }}'
+
+    build:
+        needs: prep
+        uses: '${{ github.repository }}/.github/workflows/build.yaml@${{ env.IMPL_BRANCH }}'
+        strategy:
+            fail-fast: false
+            max-parallel: '${{ needs.prep.outputs.c }}'
+            matrix: '${{ jobs.prep.outputs.m }}'
+        with:
+            j: '${{ jobs.prep.outputs.j }}'
+
+
+...
