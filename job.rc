@@ -1,0 +1,7 @@
+# -*- coding: utf-8, tab-width: 2 -*-
+
+CFG[concurrency]=64
+CFG[mod_repo]='https://github.com/Rakambda/EditSign'
+CFG[want_tags]='
+  fx://latest_tag
+  '
