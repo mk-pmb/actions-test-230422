@@ -1,0 +1,53 @@
+%YAML 1.1
+# ^-- ATTN: [2019-12-31] If you use a later version, Github will fail
+#     with a bogus error message "You have an error in your yaml syntax".
+# -*- coding: UTF-8, tab-width: 4 -*-
+---
+
+on:
+    workflow_call:
+        inputs:
+            WF_IMPL: { type: string }
+
+jobs:
+    prep:
+        name: 'Prepare build matrix'
+        runs-on: ubuntu-latest
+        steps:
+          - name: 'Checkout donut files'
+            uses: actions/checkout@v3
+            with:
+                path: job
+          - name: 'Discover stuff'
+            run:  'sh -c "$SCRIPT"'
+            env:
+                SCRIPT: |
+                    echo -n %%files:
+                    pwd
+                    find -type f'
+                    for KW in bagel donut salad ; do
+                        echo %%env:$KW
+                        env | grep -Fie $KW | sort --version-sort'
+                    done
+                    echo %%end
+#          - run: './prep.sh'
+#            id: prep
+#        outputs:
+#            c: '${{ steps.prep.outputs.c }}'
+#            j: '${{ steps.prep.outputs.j }}'
+#            m: '${{ steps.prep.outputs.m }}'
+
+#    build:
+#        needs: prep
+        # uses: '${{ github.repository }}/.github/workflows/build.yaml@${{ env.IMPL_BRANCH }}'
+#        strategy:
+#            fail-fast: false
+#            max-parallel: '${{ needs.prep.outputs.c }}'
+#            matrix: '${{ fromJSON(jobs.prep.outputs.m) }}'
+#        with:
+#            j: '${{ jobs.prep.outputs.j }}'
+
+#        steps:
+#            - run: echo
+
+...
